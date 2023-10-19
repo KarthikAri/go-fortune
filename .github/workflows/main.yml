@@ -22,13 +22,17 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Extract branch name
+      id: extract_branch
+      run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
         context: .
         file: ./Dockerfile
         push: true
-        tags: keyan25123/fortunes:${{ github.ref }}
+        tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
 
     - name: Install Trivy
       run: |
@@ -40,7 +44,7 @@ jobs:
 
     - name: Scan the Docker image and save report
       run: |
-        trivy image --format table > trivy_report.txt || true
+        trivy image --format table keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
 
     - name: Notify Slack if vulnerabilities found
       if: steps.trivy_scan.outputs.result != ''
@@ -50,14 +54,14 @@ jobs:
         fields: repo,message
         custom_payload: |
           {
-            text: ":warning: Vulnerabilities found in Docker image for branch ${{ github.ref }}. Check the attached report for details.",
+            text: ":warning: Vulnerabilities found in Docker image for branch ${{ steps.extract_branch.outputs.branch }}. Check the attached report for details.",
             channels: '#test-submission',
             attachments: [{
               "color": "#ff0000",
               "title": "Trivy Vulnerability Report",
               "fields": [{
                 "title": "Branch",
-                "value": "${{ github.ref }}",
+                "value": "${{ steps.extract_branch.outputs.branch }}",
                 "short": true
               }],
               "text": "${{ steps.trivy_scan.outputs.result }}",
