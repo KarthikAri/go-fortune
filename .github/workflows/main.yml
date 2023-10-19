@@ -40,7 +40,7 @@ jobs:
 
     - name: Scan the Docker image and save report
       run: |
-        trivy image --format table keyan25123/go-fortune:${{ github.ref }} > trivy_report.txt || true
+        trivy image --format table > trivy_report.txt || true
 
     - name: Notify Slack if vulnerabilities found
       if: steps.trivy_scan.outputs.result != ''
