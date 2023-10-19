@@ -74,7 +74,7 @@ jobs:
                   {"title": "Event", "value": "push", "short": false},
                   {"title": "Actions URL", "value": "${{ github.event.repository.html_url }}/actions", "short": false},
                   {"title": "Commit", "value": "${{ github.sha }}", "short": true},
-                  {"title": "Scan failed -Fred", "value": "Failed trivy scan.", "short": true},
+                  {"title": "Scan failed -Fred", "value": "Failed trivy scan, see uploaded report", "short": true},
                 ]
               }]
           }
