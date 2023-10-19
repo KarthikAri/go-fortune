@@ -63,9 +63,8 @@ jobs:
               "text": "${{ steps.trivy_scan.outputs.result }}",
             }]
           }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Fail workflow if vulnerabilities are found
