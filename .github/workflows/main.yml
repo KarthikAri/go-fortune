@@ -45,13 +45,15 @@ jobs:
     - name: Scan the Docker image and save report
       run: |
         trivy image --format table keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
-
-    - name: Notify Slack if vulnerabilities found
+        
+    - name: Check for vulnerabilities in trivy report
       run: |
         if [ -s trivy_report.txt ]; then
           report=$(cat trivy_report.txt)
           echo "REPORT=$report" >> $GITHUB_ENV
         fi
+    - name: Notify Slack if vulnerabilities found
+      
       if: env.REPORT != ''
       uses: 8398a7/action-slack@v3
       with:
