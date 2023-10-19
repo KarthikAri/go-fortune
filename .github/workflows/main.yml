@@ -50,15 +50,11 @@ jobs:
       id: check_vulnerabilities
       run: |
         if [ -s trivy_report.txt ]; then
-          echo "::set-output name=report::$(cat trivy_report.txt)"
+            report_content=$(cat trivy_report.txt | base64 -w 0)
+          echo "::set-output name=report::trivy_report.txt"
         else
           echo "::set-output name=report::"
         fi
-        
-
-    - name: Debugging trivy report output
-      run: |
-        echo "Report output: ${{ steps.check_vulnerabilities.outputs.report }}"
         
     - name: Notify Slack if vulnerabilities found
       if: steps.check_vulnerabilities.outputs.report != ''
@@ -84,6 +80,12 @@ jobs:
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload trivy_report.txt to Slack
+      if: steps.check_vulnerabilities.outputs.report != ''
+      run: |
+        curl -F file=@trivy_report.txt -F "initial_comment=Trivy Vulnerability Report for ${{ steps.extract_branch.outputs.branch }}" -F channels=#test-submission -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" https://slack.com/api/files.upload
+      
 
     - name: Fail workflow if vulnerabilities are found
       run: |
