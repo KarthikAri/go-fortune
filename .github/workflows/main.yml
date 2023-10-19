@@ -1,0 +1,94 @@
+name: KEYAN CICD
+
+on:
+  push:
+    branches:
+      - 'v[0-9]+.[0-9]+'
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_token }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: keyan25123/fortunes:${{ github.ref }}
+
+    - name: Install Trivy
+      run: |
+        sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update -y
+        sudo apt-get install trivy -y
+
+    - name: Scan the Docker image and save report
+      run: |
+        trivy image --format table keyan25123/fortunes:${{ github.ref }} > trivy_report.txt || true
+
+    - name: Notify Slack if vulnerabilities found
+      if: steps.trivy_scan.outputs.result != ''
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        fields: repo,message
+        custom_payload: |
+          {
+            text: ":warning: Vulnerabilities found in Docker image for branch ${{ github.ref }}. Check the attached report for details.",
+            channels: '#test-submission',
+            attachments: [{
+              "color": "#ff0000",
+              "title": "Trivy Vulnerability Report",
+              "fields": [{
+                "title": "Branch",
+                "value": "${{ github.ref }}",
+                "short": true
+              }],
+              "text": "${{ steps.trivy_scan.outputs.result }}",
+            }]
+          }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Fail workflow if vulnerabilities are found
+      run: |
+        if [ -s trivy_report.txt ]; then
+          echo "Vulnerabilities detected. Failing the workflow."
+          exit 1
+        fi
+  
+
+push:
+    needs: build-and-scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: keyan25123/fortunes:${{ github.ref }}
+
