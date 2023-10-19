@@ -54,8 +54,11 @@ jobs:
         else
           echo "::set-output name=report::"
         fi
-        echo "Report output: ${{ steps.check_vulnerabilities.outputs.report }}"
+        
 
+    - name: Debugging trivy report output
+      run: |
+        echo "Report output: ${{ steps.check_vulnerabilities.outputs.report }}"
     - name: Notify Slack if vulnerabilities found
       if: steps.check_vulnerabilities.outputs.report != ''
       uses: 8398a7/action-slack@v3
