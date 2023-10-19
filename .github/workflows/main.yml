@@ -64,19 +64,22 @@ jobs:
         fields: repo,message
         custom_payload: |
           {
-            text: ":warning: Vulnerabilities found in Docker image for branch ${{ steps.extract_branch.outputs.branch }}. Check the attached report for details.",
-            channels: '#test-submission',
-            attachments: [{
-              "color": "#ff0000",
-              "title": "Trivy Vulnerability Report",
-              "fields": [{
-                "title": "Branch",
-                "value": "${{ steps.extract_branch.outputs.branch }}",
-                "short": true
-              }],
-              "text": "${{ steps.check_vulnerabilities.outputs.report }}",
-            }]
+            text: "",
+              channels: '#test-submission',
+              attachments: [{
+                "fallback": "Reference: ${{ github.ref }}",
+                "color": "#ff0000",
+                "author_name": "${{ github.actor }}",
+                "title": "Refs: ${{ github.ref }}",
+                "fields": [
+                  {"title": "Event", "value": "push", "short": true},
+                  {"title": "Actions URL", "value": "${{ github.event.repository.html_url }}/actions", "short": false},
+                  {"title": "Commit", "value": "${{ github.sha }}", "short": true},
+                  {"title": "Scan failed -Fred", "Failed trivy scan, see uploaded report", "short": true},
+                  }]
+              }]
           }
+          
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
