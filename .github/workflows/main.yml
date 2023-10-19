@@ -47,7 +47,12 @@ jobs:
         trivy image --format table keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
 
     - name: Notify Slack if vulnerabilities found
-      if: steps.trivy_scan.outputs.result != ''
+      run: |
+        if [ -s trivy_report.txt ]; then
+          report=$(cat trivy_report.txt)
+          echo "REPORT=$report" >> $GITHUB_ENV
+        fi
+      if: env.REPORT != ''
       uses: 8398a7/action-slack@v3
       with:
         status: custom
