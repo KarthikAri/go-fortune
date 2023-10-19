@@ -54,6 +54,7 @@ jobs:
         else
           echo "::set-output name=report::"
         fi
+        echo "Report output: ${{ steps.check_vulnerabilities.outputs.report }}"
 
     - name: Notify Slack if vulnerabilities found
       if: steps.check_vulnerabilities.outputs.report != ''
@@ -73,7 +74,7 @@ jobs:
                 "value": "${{ steps.extract_branch.outputs.branch }}",
                 "short": true
               }],
-              "text": "${{ steps.trivy_scan.outputs.result }}",
+              "text": "${{ steps.check_vulnerabilities.outputs.report }}",
             }]
           }
       env:
