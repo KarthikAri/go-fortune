@@ -70,11 +70,11 @@ jobs:
                 "fallback": "Reference: ${{ github.ref }}",
                 "color": "#ff0000",
                 "fields": [
-                  {"title": "Ref", "value": "${{ github.ref }}", "short": false},
-                  {"title": "Event", "value": "push", "short": false},
-                  {"title": "Actions URL", "value": "${{ github.event.repository.html_url }}/actions", "short": false},
+                  {"title": "Ref", "value": "${{ github.ref }}", "short": true},
+                  {"title": "Event", "value": "push", "short": true},
+                  {"title": "Actions URL", "value": "${{ github.event.repository.html_url }}/actions", "short": true},
                   {"title": "Commit", "value": "${{ github.sha }}", "short": true},
-                  {"title": "Scan failed -Fred", "value": "Failed trivy scan, see uploaded report", "short": true},
+                  {"title": "Scan failed -Fred", "value": "Failed trivy scan, see uploaded report", "short": false},
                 ]
               }]
           }
