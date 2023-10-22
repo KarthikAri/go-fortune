@@ -44,7 +44,7 @@ jobs:
 
     - name: Scan the Docker image and save report
       run: |
-        trivy image --serverity CRITICAL --format table keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
+        trivy image --severity CRITICAL --format table keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
         
     - name: Check for vulnerabilities in trivy report
       id: check_vulnerabilities
