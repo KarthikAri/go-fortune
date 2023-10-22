@@ -72,11 +72,11 @@ jobs:
       
 
     - name: Fail workflow if vulnerabilities are found
+      if: steps.check_vulnerabilities.outputs.numberVul > 0
       run: |
-        if [ -s trivy_report.txt ]; then
-          echo "Vulnerabilities detected. Failing the workflow."
-          exit 1
-        fi
+        echo "Vulnerabilities detected. Failing the workflow."
+        exit 1
+        
 
     - name: Notify Slack if no vulnerabilities found
       if: steps.check_vulnerabilities.outputs.numberVul == 0
