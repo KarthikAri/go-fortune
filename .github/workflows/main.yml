@@ -58,26 +58,26 @@ jobs:
         
     - name: Notify Slack if vulnerabilities found
       if: steps.check_vulnerabilities.outputs.report != ''
-      uses: 8398a7/action-slack@v3
-      with:
-        # status: ${{job.status}}
-        # fields: ref,eventName,workflowRun,commit
-        status: custom
-        custom_payload: |
-          {
-              text: "${{ github.actor }}",
-              channels: '#test-submission',
-              attachments: [{
-                "color": "#ff0000",
-                "fields": [
-                  {"title": "Ref", "value": `${ process.env.AS_REF }`, "short": true},
-                  {"title": "Event", "value": `${ process.env.AS_EVENT_NAME }`, "short": true},
-                  {"title": "Actions URL", "value": `${ process.env.AS_WORKFLOW_RUN }`, "short": true},
-                  {"title": "Commit", "value": `${ process.env.AS_COMMIT }`, "short": true},
-                  {"title": "Scan failed -Karthik", "value": "Failed trivy scan, see uploaded report", "short": false},
-                ]
-              }]
-          }
+      uses: rtCamp/action-slack-notify@v2
+      # with:
+      #   # status: ${{job.status}}
+      #   # fields: ref,eventName,workflowRun,commit
+      #   status: custom
+      #   custom_payload: |
+      #     {
+      #         channels: '#test-submission',
+      #         attachments: [{
+      #           "color": "#ff0000",
+      #           "fields": [
+      #             {"title": "${{ github.actor }}", value:"", "short": false}
+      #             {"title": "Ref", "value": `${ process.env.AS_REF }`, "short": true},
+      #             {"title": "Event", "value": `${ process.env.AS_EVENT_NAME }`, "short": true},
+      #             {"title": "Actions URL", "value": `${ process.env.AS_WORKFLOW_RUN }`, "short": true},
+      #             {"title": "Commit", "value": `${ process.env.AS_COMMIT }`, "short": true},
+      #             {"title": "Scan failed -Karthik", "value": "Failed trivy scan, see uploaded report", "short": false},
+      #           ]
+      #         }]
+      #     }
 
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
