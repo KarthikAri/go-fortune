@@ -60,24 +60,8 @@ jobs:
       if: steps.check_vulnerabilities.outputs.report != ''
       uses: 8398a7/action-slack@v3
       with:
-        status: custom
-        fields: repo,message
-        custom_payload: |
-          {
-              text: "${{ github.actor }}",
-              channels: '#test-submission',
-              attachments: [{
-                "fallback": "Reference: ${{ github.ref }}",
-                "color": "#ff0000",
-                "fields": [
-                  {"title": "Ref", "value": "${{ github.ref }}", "short": false},
-                  {"title": "Event", "value": "push", "short": false},
-                  {"title": "Actions URL", "value": "${{ github.event.repository.html_url }}/actions", "short": false},
-                  {"title": "Commit", "value": "${{ github.sha }}", "short": true},
-                  {"title": "Scan failed -Fred", "value": "Failed trivy scan, see uploaded report", "short": true},
-                ]
-              }]
-          }
+        status: ${{job.status}}
+        fields: ref,eventName,workflowRun,commit
 
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
