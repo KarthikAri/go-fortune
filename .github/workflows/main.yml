@@ -50,10 +50,11 @@ jobs:
       id: check_vulnerabilities
       run: |
         vulnerabilities=$(grep -oP 'Total: \K\d+' trivy_report.txt)
+        echo "Number of vulnerabilities: $vulnerabilities"
         if [ "$vulnerabilities" -eq 0 ]; then
-          echo "::set-output name=report::trivy_report.txt"
-        else
           echo "::set-output name=report::"
+        else
+          echo "::set-output name=report::trivy_report.txt"
         fi
         
     - name: Notify Slack if vulnerabilities found
