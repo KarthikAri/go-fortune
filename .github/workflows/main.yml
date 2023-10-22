@@ -26,14 +26,6 @@ jobs:
       id: extract_branch
       run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
 
-    - name: Build Docker
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
-
     - name: Install Trivy
       run: |
         sudo apt-get install wget apt-transport-https gnupg lsb-release -y
@@ -69,6 +61,14 @@ jobs:
       run: |
         curl -F file=@trivy_report.txt -F "initial_comment=Trivy Vulnerability Report for ${{ steps.extract_branch.outputs.branch }}" -F channels=#test-submission -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" https://slack.com/api/files.upload
       
+    - name: Build and Push to Docker
+      uses: docker/build-push-action@v5
+      if: steps.check_vulnerabilities.outputs.report != ''
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
 
     - name: Fail workflow if vulnerabilities are found
       run: |
