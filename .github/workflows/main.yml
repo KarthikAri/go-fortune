@@ -45,12 +45,9 @@ jobs:
       id: check_vulnerabilities
       run: |
         vulnerabilities=$(grep -oP 'Total: \K\d+' trivy_report.txt)
-        echo "Number of vulnerabilities: $vulnerabilities"
-        if [ "$vulnerabilities" -eq 0 ]; then
-          echo "::set-output name=numberVul::"
-        else
-          echo "::set-output name=numberVul::$vulnerabilities"
-        fi
+        vulnerabilities_int=$(expr "$vulnerabilities" + 0)
+        echo "Number of vulnerabilities: $vulnerabilities_int"
+        echo "::set-output name=numberVul::$vulnerabilities_int"
         
     - name: Notify Slack if vulnerabilities found
       if: steps.check_vulnerabilities.outputs.numberVul > 0
