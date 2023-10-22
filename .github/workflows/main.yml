@@ -1,4 +1,4 @@
-name: KEYAN CICD
+name: BUILD
 
 on:
   push:
@@ -83,7 +83,7 @@ jobs:
         SLACK_CHANNEL: 'test-submission'
         SLACK_COLOR: '#ff0000'
         SLACK_WEBHOOK: ${{ secrets.SLACK_BOT_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Upload trivy_report.txt to Slack
       if: steps.check_vulnerabilities.outputs.report != ''
