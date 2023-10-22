@@ -57,7 +57,6 @@ jobs:
         fi
         
     - name: Notify Slack if vulnerabilities found
-      author: 'Karthik'
       if: steps.check_vulnerabilities.outputs.report != ''
       uses: rtCamp/action-slack-notify@v2
       env:
