@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-scan:
-    if:  startsWith(github.event.head_commit.message, '#NORUN')
+    if:  startsWith(${{ github.event.head_commit.message }}, '#NORUN')
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
