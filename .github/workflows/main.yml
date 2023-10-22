@@ -45,9 +45,15 @@ jobs:
     - name: Check for vulnerabilities in trivy report
       id: check_vulnerabilities
       run: |
-        vulnerabilities=$(grep -oP 'app/main \(gobinary\)\n=+\nTotal: \K\d+' trivy_report.txt)
-        echo "Number of vulnerabilities: $vulnerabilities Found" 
-        echo "::set-output name=numberVul::$vulnerabilities"
+      total_vulnerabilities=0
+      while IFS= read -r line; do
+        if [[ $line =~ Total:\ ([0-9]+) ]]; then
+          section_vulnerabilities="${BASH_REMATCH[1]}"
+          total_vulnerabilities=$((total_vulnerabilities + section_vulnerabilities))
+        fi
+      done < trivy_report.txt
+        echo "Total vulnerabilities: $total_vulnerabilities Found" 
+        echo "::set-output name=numberVul::$total_vulnerabilities"
         
     - name: Notify Slack if vulnerabilities found
       if: steps.check_vulnerabilities.outputs.numberVul > 0
