@@ -26,13 +26,8 @@ jobs:
       id: extract_branch
       run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
 
-    - name: Build and Push Docker
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
+    - name: Build Docker Image
+      run: docker build -t go-fortune:${{ steps.extract_branch.outputs.branch }}
 
     - name: Install Trivy
       run: |
@@ -44,7 +39,7 @@ jobs:
 
     - name: Scan the Docker image and save report
       run: |
-        trivy image --severity CRITICAL --format table keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
+        trivy image --severity HIGH --format table go-fortune:${{ steps.extract_branch.outputs.branch }} > trivy_report.txt || true
         
     - name: Check for vulnerabilities in trivy report
       id: check_vulnerabilities
@@ -76,7 +71,15 @@ jobs:
       run: |
         echo "Vulnerabilities detected. Failing the workflow."
         exit 1
-        
+    
+    - name: Build and Push Docker if not vulnerabilities found
+      if: steps.check_vulnerabilities.outputs.numberVul == 0
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
 
     - name: Notify Slack if no vulnerabilities found
       if: steps.check_vulnerabilities.outputs.numberVul == 0
