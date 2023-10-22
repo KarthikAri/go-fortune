@@ -80,7 +80,8 @@ jobs:
       #     }
 
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_COLOR: '#ff0000'
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Upload trivy_report.txt to Slack
