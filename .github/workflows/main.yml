@@ -52,13 +52,13 @@ jobs:
         vulnerabilities=$(grep -oP 'Total: \K\d+' trivy_report.txt)
         echo "Number of vulnerabilities: $vulnerabilities"
         if [ "$vulnerabilities" -eq 0 ]; then
-          echo "::set-output name=report::"
+          echo "::set-output name=numberVul::"
         else
-          echo "::set-output name=report::trivy_report.txt"
+          echo "::set-output name=numberVul::$vulnerabilities"
         fi
         
     - name: Notify Slack if vulnerabilities found
-      if: steps.check_vulnerabilities.outputs.report != ''
+      if: steps.check_vulnerabilities.outputs.numberVul > 0
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_CHANNEL: 'test-submission'
@@ -66,7 +66,7 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
     
     - name: Upload trivy_report.txt to Slack
-      if: steps.check_vulnerabilities.outputs.report != ''
+      if: steps.check_vulnerabilities.outputs.numberVul > 0
       run: |
         curl -F file=@trivy_report.txt -F "initial_comment=Trivy Vulnerability Report for ${{ steps.extract_branch.outputs.branch }}" -F channels=#test-submission -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" https://slack.com/api/files.upload
       
@@ -79,7 +79,7 @@ jobs:
         fi
 
     - name: Notify Slack if no vulnerabilities found
-      if: steps.check_vulnerabilities.outputs.report == ''
+      if: steps.check_vulnerabilities.outputs.numberVul == 0
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_CHANNEL: 'test-submission'
