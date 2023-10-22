@@ -70,10 +70,10 @@ jobs:
               attachments: [{
                 "color": "#ff0000",
                 "fields": [
-                  {"title": "Ref", "value": "${{ process.env.AS_REF }}", "short": true},
-                  {"title": "Event", "value": "${{ process.env.AS_EVENT_NAME }}", "short": true},
-                  {"title": "Actions URL", "value": "${{ process.env.AS_WORKFLOW_RUN }}", "short": true},
-                  {"title": "Commit", "value": "${{ process.env.AS_COMMIT }}", "short": true},
+                  {"title": "Ref", "value": `${ process.env.AS_REF }`, "short": true},
+                  {"title": "Event", "value": `${ process.env.AS_EVENT_NAME }`, "short": true},
+                  {"title": "Actions URL", "value": `${ process.env.AS_WORKFLOW_RUN }`, "short": true},
+                  {"title": "Commit", "value": `${ process.env.AS_COMMIT }`, "short": true},
                   {"title": "Scan failed -Karthik", "value": "Failed trivy scan, see uploaded report", "short": false},
                 ]
               }]
