@@ -49,8 +49,8 @@ jobs:
     - name: Check for vulnerabilities in trivy report
       id: check_vulnerabilities
       run: |
-        if [ -s trivy_report.txt ]; then
-            report_content=$(cat trivy_report.txt | base64 -w 0)
+        vulnerabilities=$(grep -oP 'Total: \K\d+' trivy_report.txt)
+        if [ "$vulnerabilities" -eq 0 ]; then
           echo "::set-output name=report::trivy_report.txt"
         else
           echo "::set-output name=report::"
