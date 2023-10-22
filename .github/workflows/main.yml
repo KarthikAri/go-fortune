@@ -45,7 +45,7 @@ jobs:
     - name: Check for vulnerabilities in trivy report
       id: check_vulnerabilities
       run: |
-        vulnerabilities=$(grep -oP '\(gobinary\)\n=+\nTotal: \K\d+' trivy_report.txt)
+        vulnerabilities=$(grep -oP 'app/main.*\n=+\nTotal: \K\d+' trivy_report.txt)
         echo "Number of vulnerabilities: $vulnerabilities Found" 
         echo "::set-output name=numberVul::$vulnerabilities"
         
