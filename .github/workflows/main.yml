@@ -45,7 +45,8 @@ jobs:
     - name: Check for vulnerabilities in trivy report
       id: check_vulnerabilities
       run: |
-        vulnerabilities=$(grep -oP 'Total: \K\d+' trivy_report.txt)
+        vulnerabilities=$(grep -oP '^Total:\ ([0-9]+)' trivy_report.txt)
+        echo "Number of vulnerabilities: $vulnerabilities" 
         vulnerabilities_int=$(expr "$vulnerabilities" + 0)
         echo "Number of vulnerabilities: $vulnerabilities_int"
         echo "::set-output name=numberVul::$vulnerabilities_int"
