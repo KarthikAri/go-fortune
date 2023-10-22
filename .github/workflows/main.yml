@@ -26,12 +26,12 @@ jobs:
       id: extract_branch
       run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
 
-    - name: Build and push
+    - name: Build Docker
       uses: docker/build-push-action@v5
       with:
         context: .
         file: ./Dockerfile
-        push: true
+        push: false
         tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
 
     - name: Install Trivy
@@ -79,4 +79,13 @@ jobs:
           echo "Vulnerabilities detected. Failing the workflow."
           exit 1
         fi
+
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: keyan25123/go-fortune:${{ steps.extract_branch.outputs.branch }}
+
   
